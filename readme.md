@@ -1,0 +1,2 @@
+CNN Model version 1.0 - no transfer learning, withdata augmentation 50 Epochs with early stopping - 69.21% accuracy
+CNN Model version 2.0 - transfer learning + data augmentation + increased layer depths - 90.46% test accuracy
