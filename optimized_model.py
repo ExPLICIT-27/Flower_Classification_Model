@@ -11,7 +11,11 @@ from sklearn.metrics import accuracy_score, classification_report
 from tqdm import tqdm
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from torchvision.models import resnet18, ResNet18_Weights
 from PIL import Image
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="albumentations")
+
 
 #custom dataset wrapper implemented with albumentations (data augmentation but faster :))
 class AlbumentationsDataset(torch.utils.data.Dataset):
@@ -36,7 +40,7 @@ def main():
     data_dir = r"Flower_Classification_Model\flower_photos"
     img_size = 224
     batch_size = 32
-    num_workers = os.cpu_count()//2 #max parallelism (at your own risk)
+    num_workers = 2 #max parallelism os.cpu_count()(at your own risk)
 
     #Albumentations 
     train_transform = A.Compose([
@@ -77,14 +81,33 @@ def main():
     cv_dataset = AlbumentationsDataset(cv_data, test_transform)
     test_dataset = AlbumentationsDataset(test_data, test_transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-    cv_loader = DataLoader(cv_dataset, batch_size=batch_size, shuffle = False, num_workers=num_workers)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle = False, num_workers=num_workers)
+    train_loader = DataLoader(
+        train_dataset, 
+        batch_size=batch_size, 
+        shuffle=True, 
+        num_workers=num_workers,
+        persistent_workers=True, #more faster -> really important, 
+        pin_memory=True #speeds up GPU transfer
+    )
+    cv_loader = DataLoader(
+        cv_dataset, 
+        batch_size=batch_size, 
+        shuffle = False, 
+        num_workers=num_workers,
+        persistent_workers=True
+    )
+    test_loader = DataLoader(
+        test_dataset, 
+        batch_size=batch_size, 
+        shuffle = False, 
+        num_workers=num_workers,
+        persistent_workers=True
+    )
 
     #Enhancing the model via transfer learning, utilizing the pretrained
     #resnet18
 
-    model = models.resnet18(pretrained = True)
+    model = models.resnet18(weights = ResNet18_Weights.DEFAULT)
     for param in model.parameters():
         param.required_grad = False #freezing pretraining
     
@@ -159,7 +182,7 @@ def main():
                 print("Early stopping triggered")
                 break
     model.load_state_dict(best_model)
-
+    torch.save(best_model, "version_2_resnet18.pth")
     #plotting and evaluation
     epochs_range = range(1, len(train_acc_list) + 1)
     plt.figure(figsize=(12, 5))
