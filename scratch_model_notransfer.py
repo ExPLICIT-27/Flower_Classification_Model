@@ -51,9 +51,28 @@ def main():
     cv_dataset.dataset.transform = test_transforms
     test_dataset.dataset.transform = test_transforms
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle = True, num_workers=num_workers)
-    cv_loader = DataLoader(cv_dataset, batch_size = batch_size, shuffle=False, num_workers=num_workers)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    train_loader = DataLoader(
+        train_dataset, 
+        batch_size=batch_size, 
+        shuffle = True, 
+        num_workers=num_workers, 
+        persistent_workers=True, 
+        pin_memory=True
+    )
+    cv_loader = DataLoader(
+        cv_dataset, 
+        batch_size = batch_size, 
+        shuffle=False, 
+        num_workers=num_workers,
+        persistent_workers=True
+    )
+    test_loader = DataLoader(
+        test_dataset, 
+        batch_size=batch_size, 
+        shuffle=False, 
+        num_workers=num_workers,
+        persistent_workers=True
+    )
 
     #visualize samples
     def visualize_samples(dataset, title):
