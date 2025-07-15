@@ -1,4 +1,3 @@
-Here’s your updated `README.md` with **Version 3: ResNet50** added, while preserving the structure and tone of your original content:
 
 ---
 
