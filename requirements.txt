@@ -1,4 +1,4 @@
-#note : these are the libraries for purely running the UI
+#note : these are the libraries for purely running the UI with the saved model
 
 # Core libraries
 streamlit==1.46.1
