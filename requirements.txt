@@ -5,7 +5,6 @@ streamlit==1.46.1
 torch==2.7.1
 torchvision==0.22.1
 albumentations==2.0.8
-albumentations.pytorch==1.0.4  
 Pillow==11.3.0
 numpy==2.1.3
 
